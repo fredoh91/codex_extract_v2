@@ -1,0 +1,29 @@
+{
+  "type": "module",
+  "name": "codex_extract_v2",
+  "version": "2.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "tsc -w",
+    "clean": "rimraf dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "logrotate-stream": "^0.2.9",
+    "mysql2": "^3.13.0",
+    "odbc": "^2.4.9",
+    "pino": "^9.6.0"
+  },
+  "devDependencies": {
+    "@types/logrotate-stream": "^0.2.34",
+    "@types/node": "^20.11.24",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.8.2"
+  }
+}
