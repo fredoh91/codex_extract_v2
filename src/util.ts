@@ -1,11 +1,11 @@
 
 /**
- * Cette fonction est utilisée pour les tests, elle pourra être supprimée quand le script sera en PROD
- * Elle permet de générer une chaîne de caractères aléatoire de caractères de longueur spécifiée (par défaut 4 caractères)
- * Elle était utilisée pour générer des identifiants aléatoires pour des INSERT pour les tests
+ * Cette fonction est utilisee pour les tests, elle pourra être supprimee quand le script sera en PROD
+ * Elle permet de generer une chaîne de caracteres aleatoire de caracteres de longueur specifiee (par defaut 4 caracteres)
+ * Elle etait utilisee pour generer des identifiants aleatoires pour des INSERT pour les tests
  * 
- * @param {number} length - Longueur de la chaîne de caractères à générer
- * @returns {string} - Chaîne de caractères aléatoire
+ * @param {number} length - Longueur de la chaîne de caracteres à generer
+ * @returns {string} - Chaîne de caracteres aleatoire
  */
 function generateRandomString(length: number = 4): string {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -21,17 +21,17 @@ function generateRandomString(length: number = 4): string {
 }
 
 /**
- * Cette fonction retourne une chaîne de caractère formatée en TIMESTAMP pour la date et l'heure
+ * Cette fonction retourne une chaîne de caractere formatee en TIMESTAMP pour la date et l'heure
  * Elle permet de stocker la date et l'heure d'export CODEX
  * 
- * @returns {string} - Chaîne de caractère formatée en TIMESTAMP
+ * @returns {string} - Chaîne de caractere formatee en TIMESTAMP
  */
 function donneformattedDate(): string {
   const now = new Date();
 
-  // Utiliser des méthodes pour obtenir la date et l'heure locales
+  // Utiliser des methodes pour obtenir la date et l'heure locales
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés à partir de 0
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // Les mois sont indexes à partir de 0
   const day = String(now.getDate()).padStart(2, '0');
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');

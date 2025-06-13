@@ -41,7 +41,7 @@ interface DbConnection {
  * @param {*} nbCodeVU : nombre de codeVU à traiter par lot
  * @returns : un tableau de codeVU à traiter
  */
-async function donneTabCodeVU(connectionCodexOdbc: DbConnection, nbCodeVU: number): Promise<string[][]> {
+async function donneTabCodeVU_dashboard_rs_5(connectionCodexOdbc: DbConnection, nbCodeVU: number): Promise<string[][]> {
     const SQL_CodeVU = `SELECT DISTINCT VU.codeVU
                                     FROM VU 
                                     INNER JOIN VUTitulaires 	ON VU.codeVU = VUTitulaires.codeVU
@@ -72,7 +72,7 @@ async function donneTabCodeVU(connectionCodexOdbc: DbConnection, nbCodeVU: numbe
  * @param {*} connectionCodexExtract 
  * @param {*} formattedDate 
  */
-async function trtLotCodeVU(codeVUArray: string[], connectionCodexOdbc: DbConnection, connectionCodexExtract: DbConnection, formattedDate: string): Promise<void> {
+async function trtLotCodeVU_dashboard_rs_5(codeVUArray: string[], connectionCodexOdbc: DbConnection, connectionCodexExtract: DbConnection, formattedDate: string): Promise<void> {
     const codeVUString = codeVUArray.map(codeVU => `'${codeVU}'`).join(',');
     const sSQL_select = donneSQL_select(codeVUString);
     const results = await connectionCodexOdbc.query(sSQL_select);
@@ -195,8 +195,8 @@ function chunkArray(array: string[], chunkSize: number): string[][] {
 }
 
 export {
-    donneTabCodeVU,
-    trtLotCodeVU,
+    donneTabCodeVU_dashboard_rs_5,
+    trtLotCodeVU_dashboard_rs_5,
     donneSQL_select,
     chunkArray
 };

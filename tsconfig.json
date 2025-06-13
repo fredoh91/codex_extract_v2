@@ -2,9 +2,9 @@
     "compilerOptions": {
         "outDir": "./dist/",
         "rootDir": "./src",
-        "target": "ES2021",
-        "module": "Node16",
-        "moduleResolution": "node16",
+        "target": "ES2020",
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "strict": true,
@@ -31,7 +31,6 @@
     "exclude": [
         "node_modules",
         "dist",
-        "**/*.test.ts",
-        "src/test.ts"
+        "**/*.test.ts"
     ]
 }
