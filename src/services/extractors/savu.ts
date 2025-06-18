@@ -38,24 +38,61 @@ export class SavuExtractor {
 
       logger.info(`${rows.length} SAVU trouves`);
 
+      // // Afficher le premier enregistrement pour debug
+      // if (rows.length > 0) {
+      //   const firstRow = rows[0];
+      //   logger.info('=== PREMIER ENREGISTREMENT SAVU ===');
+      //   logger.info('Proprietes disponibles: ' + Object.keys(firstRow).join(', '));
+      //   logger.info('Donnees du premier enregistrement:', JSON.stringify(firstRow, null, 2));
+      //   logger.info('=============================');
+      // }
+
       // 3. Inserer les donnees dans la table cible
       logger.info('Insertion des donnees dans savu...');
       const insertQuery = insertSavuQuery();
       let insertedCount = 0;
       let errorCount = 0;
+      const logFrequency = parseInt(process.env.NB_LIGNES_DEBUG_SAVU || '1000');
 
       for (const row of rows) {
         try {
           await this.targetPool.query(insertQuery, [
             row.codeVU,
             row.codeCIS,
-            row.codeDossier
+            row.codeDossier,
+            row.nomVU,
+            row.numElement,
+            row.codeSubstance,
+            row.numComposant,
+            row.codeUniteDosage,
+            row.codeNature,
+            row.dosageLibraTypo,
+            row.dosageLibra,
+            row.libCourt,
+            row.nomSubstance,
+            row.codeProduit,
+            row.libNature,
+            row.libFormePH
           ]);
           insertedCount++;
+          
+          // Log selon la fréquence configurée
+          if (insertedCount % logFrequency === 0) {
+            logger.info(`${insertedCount} enregistrements inseres...`);
+          }
+          
         } catch (error) {
           errorCount++;
           logger.error(`Erreur lors de l'insertion de l'enregistrement:`, error);
-          logger.error('Donnees problematiques:', row);
+          logger.error('Message d\'erreur:', error instanceof Error ? error.message : String(error));
+          logger.error('Donnees problematiques:', JSON.stringify(row, null, 2));
+          
+          // Afficher les détails de l'erreur MySQL si disponible
+          if (error instanceof Error && 'code' in error) {
+            logger.error('Code erreur MySQL:', (error as any).code);
+            logger.error('Etat SQL:', (error as any).sqlState);
+            logger.error('Message SQL:', (error as any).sqlMessage);
+          }
         }
       }
 

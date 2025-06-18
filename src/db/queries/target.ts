@@ -3,8 +3,21 @@ export function insertSavuQuery(): string {
     INSERT INTO savu (
       code_vu,
       code_cis,
-      code_dossier
-    ) VALUES (?, ?, ?)
+      code_dossier,
+      nom_vu,
+      num_element,
+      code_substance,
+      num_composant,
+      code_unite_dosage,
+      code_nature,
+      dosage_libra_typo,
+      dosage_libra,
+      lib_court,
+      nom_substance,
+      code_produit,
+      lib_nature,
+      lib_forme_ph
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 }
 
@@ -13,8 +26,35 @@ export function insertVuutilQuery(): string {
     INSERT INTO vuutil (
       code_vu,
       code_cis,
-      code_dossier
-    ) VALUES (?, ?, ?)
+      code_dossier,
+      nom_vu,
+      dbo_autorisation_lib_abr,
+      dbo_classe_atc_lib_abr,
+      dbo_classe_atc_lib_court,
+      code_contact,
+      nom_contact_libra,
+      adresse_contact,
+      adresse_compl,
+      code_post,
+      nom_ville,
+      tel_contact,
+      fax_contact,
+      dbo_pays_lib_court,
+      dbo_statut_speci_lib_abr,
+      statut_abrege,
+      code_acteur,
+      code_tigre,
+      nom_acteur_long,
+      adresse,
+      adresse_compl_expl,
+      code_post_expl,
+      nom_ville_expl,
+      complement,
+      tel,
+      fax,
+      dbo_pays_lib_abr,
+      code_produit
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 }
 

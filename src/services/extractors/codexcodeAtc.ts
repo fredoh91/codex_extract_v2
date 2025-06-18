@@ -43,6 +43,7 @@ export class CodexcodeAtcExtractor {
       const insertQuery = insertCodexcodeAtcQuery();
       let insertedCount = 0;
       let errorCount = 0;
+      const logFrequency = parseInt(process.env.NB_LIGNES_DEBUG_CODEXCODEATC || '1000');
 
       for (const row of rows) {
         try {
@@ -53,6 +54,12 @@ export class CodexcodeAtcExtractor {
             row.TypeCodeATC
           ]);
           insertedCount++;
+          
+          // Log selon la fréquence configurée
+          if (insertedCount % logFrequency === 0) {
+            logger.info(`${insertedCount} enregistrements inseres...`);
+          }
+          
         } catch (error) {
           errorCount++;
           logger.error(`Erreur lors de l'insertion de l'enregistrement:`, error);
