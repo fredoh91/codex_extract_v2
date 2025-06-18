@@ -58,23 +58,18 @@ async function main(): Promise<void> {
     const dboComposantsHaumeaExtractor = new DboComposantsHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await dboComposantsHaumeaExtractor.extract();
 
-    // Extraction des contacts
     const contactExtractor = new DboContactHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await contactExtractor.extract();
 
-    // Extraction des dossiers
     const dossierExtractor = new DboDossierHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await dossierExtractor.extract();
 
-    // Extraction des noms de substance
     const nomsSubstanceExtractor = new DboNomsSubstanceHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await nomsSubstanceExtractor.extract();
 
-    // Extraction des VU
     const vuExtractor = new DboVuHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await vuExtractor.extract();
 
-    // Extraction des VU titulaires
     const vuTitulairesExtractor = new DboVuTitulairesHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await vuTitulairesExtractor.extract();
 

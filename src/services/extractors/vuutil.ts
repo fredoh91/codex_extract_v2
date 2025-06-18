@@ -2,6 +2,7 @@ import { Pool as MysqlPool } from 'mysql2/promise';
 import { Pool as OdbcPool } from 'odbc';
 import { logger } from '../../utils/logger.js';
 import { getVuutilQuery } from '../../db/queries/source.js';
+import { insertVuutilQuery } from '../../db/queries/target.js';
 import { truncateTable } from '../truncateTable.js';
 
 export class VuutilExtractor {
@@ -56,40 +57,7 @@ export class VuutilExtractor {
       // // 5. Test progressif - tester avec 29 colonnes (complet) sur toutes les lignes
       // logger.info('=== TEST PROGRESSIF - 29 COLONNES (COMPLET) - TOUTES LES LIGNES ===');
       
-      const columns = [
-        'code_vu',
-        'code_cis', 
-        'code_dossier',
-        'nom_vu',
-        'dbo_autorisation_lib_abr',
-        'dbo_classe_atc_lib_abr',
-        'dbo_classe_atc_lib_court',
-        'code_contact',
-        'nom_contact_libra',
-        'adresse_contact',
-        'adresse_compl',
-        'code_post',
-        'nom_ville',
-        'tel_contact',
-        'fax_contact',
-        'dbo_pays_lib_court',
-        'dbo_statut_speci_lib_abr',
-        'statut_abrege',
-        'code_acteur',
-        'code_tigre',
-        'nom_acteur_long',
-        'adresse',
-        'adresse_compl_expl',
-        'code_post_expl',
-        'nom_ville_expl',
-        'complement',
-        'tel',
-        'fax',
-        'dbo_pays_lib_abr',
-        'code_produit'
-      ];
-
-      const insertQuery = `INSERT INTO vuutil (${columns.join(', ')}) VALUES (${columns.map(() => '?').join(', ')});`;
+      const insertQuery = insertVuutilQuery();
       
       // logger.info('Insertion avec 29 colonnes...');
       
@@ -130,7 +98,7 @@ export class VuutilExtractor {
             row.fax,
             row.paysLibAbr,
             row.codeProduit,
-            row.libRechDenomination
+            row.lib_rech_denomination
           ];
 
           await this.targetPool.query(insertQuery, values);
