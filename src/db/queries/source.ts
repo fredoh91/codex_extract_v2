@@ -16,7 +16,9 @@ export const getSavuQuery = (): string => {
       codex.dbo.VoieAdmin.libCourt,
       codex.dbo.NomsSubstance.nomSubstance,
       codex.dbo.VU.codeProduit,
-      codex.dbo.FormePH.libCourt AS libFormePH
+      codex.dbo.FormePH.libCourt AS libFormePH,
+      codex.dbo.NomsSubstance.libRech AS lib_rech_substance,
+      codex.dbo.VU.libRech AS lib_rech_denomination
     FROM codex.dbo.VU
     INNER JOIN codex.dbo.StatutSpeci ON codex.dbo.VU.codeStatut = codex.dbo.StatutSpeci.codeTerme
     INNER JOIN codex.dbo.Composants ON codex.dbo.VU.codeVU = codex.dbo.Composants.codeVU
@@ -68,7 +70,8 @@ export const getVuutilQuery = (): string => {
       va.tel,
       va.fax,
       p.libAbr AS paysLibAbr,
-      v.codeProduit
+      v.codeProduit,
+      v.libRech AS lib_rech_denomination
     FROM codex.dbo.VU v
     INNER JOIN codex.dbo.Autorisation a ON v.codeAutorisation = a.codeTerme
     INNER JOIN codex.dbo.VUClassesATC vcatc ON v.codeVU = vcatc.codeVU
