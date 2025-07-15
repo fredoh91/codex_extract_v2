@@ -1,6 +1,7 @@
 import { Pool as MysqlPool } from 'mysql2/promise';
 import { Pool as OdbcPool } from 'odbc';
 import { truncateTable } from '../truncateTable.js';
+import { logger } from '../../utils/logger.js';
 
 export abstract class BaseExtractor {
   protected sourceConnection: OdbcPool;
@@ -35,5 +36,6 @@ export abstract class BaseExtractor {
    */
   protected logExtraction(count: number): void {
     console.log(`Extraction terminée pour ${this.tableName}: ${count} lignes traitées`);
+    logger.info(`Extraction terminée pour ${this.tableName}: ${count} lignes traitées`);
   }
 } 

@@ -104,6 +104,7 @@ async function main(): Promise<void> {
 
   } catch (error) {
     console.error('Erreur brute:', error);
+    logger.error('Erreur brute:', error);
     logger.error('Erreur lors du traitement:', error instanceof Error ? error.message : error);
     if (error instanceof Error && error.stack) {
       logger.error('Stack trace:', error.stack);
@@ -140,6 +141,7 @@ async function main(): Promise<void> {
         logger.warn('Erreur non critique lors de la fermeture du pool ODBC MOCATOR:', err);
       }
     }
+    logger.info('Fin import');
   }
 }
 
@@ -148,6 +150,7 @@ if (process.env.TYPE_EXECUTION === 'Prod') {
   process.on('uncaughtException', (err: Error) => {
     const stackLines = err.stack?.split('\n') ?? [];
     const location = stackLines[1]?.trim() ?? 'Unknown location';
+    console.error(`Uncaught Exception: ${err.message}`);
     logger.error(`Uncaught Exception: ${err.message}`);
     logger.error(`Location: ${location}`);
     logger.error(err.stack);
@@ -157,6 +160,7 @@ if (process.env.TYPE_EXECUTION === 'Prod') {
     const error = reason as Error;
     const stackLines = error.stack?.split('\n') ?? [];
     const location = stackLines[1]?.trim() ?? 'Unknown location';
+    console.error(`Unhandled Rejection at: ${promise}, reason: ${reason}`);
     logger.error(`Unhandled Rejection at: ${promise}, reason: ${reason}`);
     logger.error(`Location: ${location}`);
     logger.error(error.stack);

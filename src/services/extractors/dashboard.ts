@@ -1,4 +1,5 @@
 import { BaseExtractor } from './base.js';
+import { logger } from '../../utils/logger.js';
 
 export class DashboardExtractor extends BaseExtractor {
   constructor(sourceConnection: any, targetConnection: any) {
@@ -97,6 +98,7 @@ export class DashboardExtractor extends BaseExtractor {
       }
     } catch (error) {
       console.error(`Erreur lors de l'extraction de ${this.tableName}:`, error);
+      logger.error(`Erreur lors de l'extraction de ${this.tableName}:`, error);
       throw error;
     }
   }

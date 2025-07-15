@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 
 // import 'dotenv/config'
 import dotenv from 'dotenv';
+import { logger } from '../utils/logger.js';
 
 // const envPath = path.resolve(__dirname, '..', '.env');
 const currentUrl = import.meta.url;
@@ -35,10 +36,12 @@ async function createPoolCodexOdbc(): Promise<odbc.Pool> {
     const pool = await odbc.pool(connectionConfig);
     
     console.log('Pool BDD CODEX/ODBC ouvert');
+    logger.info('Pool BDD CODEX/ODBC ouvert');
 
     return pool;
   } catch (err) {
     console.error('Erreur à la connexion de CODEX/ODBC :', err);
+    logger.error('Erreur à la connexion de CODEX/ODBC :', err);
     throw err;
   }
 }
@@ -55,9 +58,11 @@ async function createPoolCodexOdbc(): Promise<odbc.Pool> {
 async function closePoolCodexOdbc(pool: odbc.Pool): Promise<void> {
   try {
     console.log('Fermeture du pool vers la BDD CODEX/ODBC');
+    logger.info('Fermeture du pool vers la BDD CODEX/ODBC');
     pool.close();
   } catch (err) {
     console.error('Erreur à la fermeture de la connexion de CODEX/ODBC :', err);
+    logger.error('Erreur à la fermeture de la connexion de CODEX/ODBC :', err);
     throw err;
   }
 }

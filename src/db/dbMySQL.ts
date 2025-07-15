@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 
 // import 'dotenv/config'
 import dotenv from 'dotenv';
+import { logger } from '../utils/logger.js';
 
 // const envPath = path.resolve(__dirname, '..', '.env');
 const currentUrl = import.meta.url;
@@ -34,9 +35,11 @@ async function createPoolCodexExtract(): Promise<Pool> {
       charset: 'utf8mb4' // Ensure UTF-8 encoding
     });
     console.log('Pool BDD CODEX_extract ouvert');
+    logger.info('Pool BDD CODEX_extract ouvert');
     return pool;
   } catch (err) {
     console.error('Erreur à la connexion de CODEX_extract :', err);
+    logger.error('Erreur à la connexion de CODEX_extract :', err);
     throw err;
   }
 }
@@ -53,9 +56,11 @@ async function createPoolCodexExtract(): Promise<Pool> {
 async function closePoolCodexExtract(pool: Pool): Promise<void> {
   try {
     console.log('Fermeture du pool vers la BDD CODEX_extract');
+    logger.info('Fermeture du pool vers la BDD CODEX_extract');
     await pool.end();
   } catch (err) {
     console.error('Erreur à la fermeture de la connexion de CODEX_extract :', err);
+    logger.error('Erreur à la fermeture de la connexion de CODEX_extract :', err);
     throw err;
   }
 };
