@@ -49,45 +49,59 @@ async function main(): Promise<void> {
     // Creation et execution des extracteurs
     const savuExtractor = new SavuExtractor(poolCodexOdbc, poolCodexExtract);
     await savuExtractor.extract();
+    nbTablesExtraites++;
 
     const vuutilExtractor = new VuutilExtractor(poolCodexOdbc, poolCodexExtract);
     await vuutilExtractor.extract();
+    nbTablesExtraites++;
 
     const codexcodeAtcExtractor = new CodexcodeAtcExtractor(poolCodexOdbc, poolCodexExtract);
     await codexcodeAtcExtractor.extract();
+    nbTablesExtraites++;
 
     const codexpictoGrossesseExtractor = new CodexpictoGrossesseExtractor(poolCodexOdbc, poolCodexExtract);
     await codexpictoGrossesseExtractor.extract();
+    nbTablesExtraites++;
 
     const codexpresentationExtractor = new CodexpresentationExtractor(poolCodexOdbc, poolCodexExtract);
     await codexpresentationExtractor.extract();
+    nbTablesExtraites++;
 
     const codexvoieAdminExtractor = new CodexvoieAdminExtractor(poolCodexOdbc, poolCodexExtract);
     await codexvoieAdminExtractor.extract();
+    nbTablesExtraites++;
 
     const dboComposantsHaumeaExtractor = new DboComposantsHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await dboComposantsHaumeaExtractor.extract();
+    nbTablesExtraites++;
 
     const contactExtractor = new DboContactHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await contactExtractor.extract();
+    nbTablesExtraites++;
 
     const dossierExtractor = new DboDossierHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await dossierExtractor.extract();
+    nbTablesExtraites++;
 
     const nomsSubstanceExtractor = new DboNomsSubstanceHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await nomsSubstanceExtractor.extract();
+    nbTablesExtraites++;
 
     const vuExtractor = new DboVuHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await vuExtractor.extract();
+    nbTablesExtraites++;
 
     const vuTitulairesExtractor = new DboVuTitulairesHaumeaExtractor(poolCodexOdbc, poolCodexExtract);
     await vuTitulairesExtractor.extract();
+    nbTablesExtraites++;
 
     const vudelivranceExtractor = new VudelivranceExtractor(poolCodexOdbc, poolCodexExtract);
     await vudelivranceExtractor.extract();
+    nbTablesExtraites++;
 
     const dashboardRs5Extractor = new DashboardRs5Extractor(poolCodexOdbc, poolCodexExtract, 100);
     await dashboardRs5Extractor.extract();
+    nbTablesExtraites++;
     
     // Extraction MOCATOR -> CODEX_extract
     const mocatorDocumentExtractor = new MocatorDocumentExtractor(poolMocatorOdbc, poolCodexExtract);

@@ -1,9 +1,13 @@
 import { pino } from 'pino';
 import path from 'path';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-// Creation du dossier logs s'il n'existe pas
-const logsDir = path.join(process.cwd(), 'logs');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Création du dossier logs à la racine du projet
+const logsDir = path.join(__dirname, '../../logs');
 if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir);
 }

@@ -80,7 +80,9 @@ export class SavuExtractor {
           
           // Log selon la fréquence configurée
           if (insertedCount % logFrequency === 0) {
-            logger.info(`${insertedCount} enregistrements inseres...`);
+            const now = new Date();
+            const dateStr = now.toLocaleString('fr-FR', { hour12: false });
+            console.log(`[${dateStr}] ${insertedCount} enregistrements inseres...`);
           }
           
         } catch (error) {
