@@ -291,4 +291,74 @@ export function insertDashboardRs5Query(values: string[]): string {
       date_extract
     ) VALUES ${values.join(',')}
   `;
+}
+
+export function insertMocatorDocumentQuery(): string {
+  return `
+    INSERT INTO mocatordocument (
+      doc_id,
+      grp_id,
+      not_id,
+      date_arch,
+      date_notif,
+      srce_name,
+      srce_size,
+      srce_last_upd,
+      native_format,
+      server_name,
+      rem,
+      author,
+      seance_id,
+      date_seance
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+}
+
+export function insertMocatorDocumentHtmlQuery(): string {
+  return `
+    INSERT INTO mocatordocument_html (
+      hdoc_id,
+      spec_id,
+      doc_id,
+      typ_id,
+      hname,
+      date_conv
+    ) VALUES (?, ?, ?, ?, ?, ?)
+  `;
+}
+
+export function insertMocatorDocumentXmlQuery(): string {
+  return `
+    INSERT INTO mocatordocument_xml (
+      xdoc_id,
+      code_vu,
+      doc_id,
+      nature_doc,
+      statut_doc,
+      auteur,
+      server_name,
+      srce_name,
+      srce_size,
+      srce_last_upd,
+      native_format,
+      version_dtd,
+      doc_joint,
+      num_ordre,
+      date_maj_amm,
+      date_valide,
+      date_liv,
+      date_arch,
+      commentaire
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+}
+
+export function insertDatesLancementsExtractionsQuery(): string {
+  return `
+    INSERT INTO dates_lancements_extractions (
+      date_debut_extraction,
+      date_fin_extraction,
+      nb_tables_extraites
+    ) VALUES (?, ?, ?)
+  `;
 } 

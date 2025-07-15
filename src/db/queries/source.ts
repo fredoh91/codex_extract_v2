@@ -381,3 +381,63 @@ export function getDashboardRs5Query(codeVUs: string[]): string {
     ORDER BY VU.codeVU, Presentations.codeCIP13
   `;
 } 
+
+export function getMocatorDocumentQuery(): string {
+  return `
+    SELECT 
+      d.DocId,
+      d.GrpId,
+      d.NotId,
+      d.DateArch,
+      d.DateNotif,
+      d.SrceName,
+      d.SrceSize,
+      d.SrceLastUpd,
+      d.NativeFormat,
+      d.ServerName,
+      d.Rem,
+      d.Author,
+      d.SeanceId,
+      d.DateSeance
+    FROM MOCATOR.dbo.Document d
+  `;
+}
+
+export function getMocatorDocumentHtmlQuery(): string {
+  return `
+    SELECT 
+      dh.HdocId,
+      dh.SpecId,
+      dh.DocId,
+      dh.TypId,
+      dh.HName,
+      dh.DateConv
+    FROM MOCATOR.dbo.DocumentHTML dh
+  `;
+} 
+
+export function getMocatorDocumentXmlQuery(): string {
+  return `
+    SELECT 
+      dx.XdocId,
+      dx.codeVU,
+      dx.DocId,
+      dx.NatureDoc,
+      dx.StatutDoc,
+      dx.Auteur,
+      dx.ServerName,
+      dx.SrceName,
+      dx.SrceSize,
+      dx.SrceLastUpd,
+      dx.NativeFormat,
+      dx.VersionDTD,
+      dx.DocJoint,
+      dx.NumOrdre,
+      dx.DateMajAMM,
+      dx.DateValide,
+      dx.DateLiv,
+      dx.DateArch,
+      dx.Commentaire
+    FROM MOCATOR.dbo.DocumentXML dx
+  `;
+} 
