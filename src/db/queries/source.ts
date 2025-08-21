@@ -71,7 +71,8 @@ export const getVuutilQuery = (): string => {
       va.fax,
       p.libAbr AS paysLibAbr,
       v.codeProduit,
-      v.libRech AS lib_rech_denomination
+      v.libRech AS lib_rech_denomination,
+      v.codeVUPrinceps
     FROM codex.dbo.VU v
     INNER JOIN codex.dbo.Autorisation a ON v.codeAutorisation = a.codeTerme
     INNER JOIN codex.dbo.VUClassesATC vcatc ON v.codeVU = vcatc.codeVU

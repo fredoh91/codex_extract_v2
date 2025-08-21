@@ -98,7 +98,8 @@ export class VuutilExtractor {
             row.fax,
             row.paysLibAbr,
             row.codeProduit,
-            row.lib_rech_denomination
+            row.lib_rech_denomination,
+            row.codeVUPrinceps
           ];
 
           await this.targetPool.query(insertQuery, values);
