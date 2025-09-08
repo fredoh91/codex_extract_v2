@@ -18,7 +18,8 @@ export const getSavuQuery = (): string => {
       codex.dbo.VU.codeProduit,
       codex.dbo.FormePH.libCourt AS libFormePH,
       codex.dbo.NomsSubstance.libRech AS lib_rech_substance,
-      codex.dbo.VU.libRech AS lib_rech_denomination
+      codex.dbo.VU.libRech AS lib_rech_denomination,
+      codex.dbo.Produit.nomProduit
     FROM codex.dbo.VU
     INNER JOIN codex.dbo.StatutSpeci ON codex.dbo.VU.codeStatut = codex.dbo.StatutSpeci.codeTerme
     INNER JOIN codex.dbo.Composants ON codex.dbo.VU.codeVU = codex.dbo.Composants.codeVU
@@ -28,6 +29,7 @@ export const getSavuQuery = (): string => {
     LEFT JOIN codex.dbo.Nature ON codex.dbo.Composants.codeNature = codex.dbo.Nature.codeTerme
     INNER JOIN codex.dbo.VUElements ON codex.dbo.Composants.numElement = codex.dbo.VUElements.numElement AND codex.dbo.Composants.codeVU = codex.dbo.VUElements.codeVU
     INNER JOIN codex.dbo.FormePH ON codex.dbo.VUElements.codeFormePH = codex.dbo.FormePH.codeTerme
+    LEFT JOIN codex.dbo.Produit ON codex.dbo.VU.codeProduit = codex.dbo.Produit.codeProduit
     WHERE (codex.dbo.Composants.codeNature = 3 OR codex.dbo.Composants.codeNature = 5)
     AND (codex.dbo.StatutSpeci.libAbr = 'Archivé' OR codex.dbo.StatutSpeci.libAbr = 'Actif')
     ORDER BY codex.dbo.VU.codeVU
@@ -72,7 +74,8 @@ export const getVuutilQuery = (): string => {
       p.libAbr AS paysLibAbr,
       v.codeProduit,
       v.libRech AS lib_rech_denomination,
-      v.codeVUPrinceps
+      v.codeVUPrinceps,
+      pr.nomProduit
     FROM codex.dbo.VU v
     INNER JOIN codex.dbo.Autorisation a ON v.codeAutorisation = a.codeTerme
     INNER JOIN codex.dbo.VUClassesATC vcatc ON v.codeVU = vcatc.codeVU
@@ -81,6 +84,7 @@ export const getVuutilQuery = (): string => {
     INNER JOIN codex.dbo.Contact c ON vt.codeContact = c.codeContact
     INNER JOIN codex.dbo.Pays p ON c.codePays = p.codeTerme
     INNER JOIN codex.dbo.StatutSpeci ss ON v.codeStatut = ss.codeTerme
+    LEFT JOIN codex.dbo.Produit pr ON v.codeProduit = pr.codeProduit
     LEFT JOIN (
       SELECT
         va.codeVU,

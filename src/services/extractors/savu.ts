@@ -74,7 +74,8 @@ export class SavuExtractor {
             row.libNature,
             row.libFormePH,
             row.lib_rech_substance,
-            row.lib_rech_denomination
+            row.lib_rech_denomination,
+            row.nomProduit
           ]);
           insertedCount++;
           
