@@ -33,7 +33,7 @@ export class DashboardRs5Extractor extends BaseExtractor {
   protected sourcePool: OdbcPool;
   protected targetPool: MysqlPool;
 
-  constructor(sourcePool: OdbcPool, targetPool: MysqlPool, batchSize: number = 100) {
+  constructor(sourcePool: OdbcPool, targetPool: MysqlPool, batchSize: number = 50000) {
     super(sourcePool, targetPool, 'dashboard_rs5');
     this.batchSize = batchSize;
     this.sourcePool = sourcePool;

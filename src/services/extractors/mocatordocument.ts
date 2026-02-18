@@ -38,7 +38,7 @@ export class MocatorDocumentExtractor {
       const insertQuery = insertMocatorDocumentQuery();
       let insertedCount = 0;
       let errorCount = 0;
-      const logFrequency = parseInt(process.env.NB_LIGNES_DEBUG_MOCATORDOCUMENT || '1000');
+      const logFrequency = parseInt(process.env.NB_LIGNES_DEBUG_MOCATORDOCUMENT || '10000');
 
       for (const row of rows) {
         try {
