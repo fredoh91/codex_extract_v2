@@ -445,4 +445,28 @@ export function getMocatorDocumentXmlQuery(): string {
       dx.Commentaire
     FROM MOCATOR.dbo.DocumentXML dx
   `;
-} 
+}
+
+export const getSubSimadDataQuery = (): string => {
+  return `
+    SELECT
+        pc.productfamily,
+        pc.topproductname,
+        pc.productname,
+        pc.creation_date,
+        pc.modification_date,
+        pa.unii_id,
+        pa.cas_id,
+        pc.is_product_enabled,
+        pc.productPV,
+        pc.productADDICTO
+    FROM
+        product_common AS pc
+    LEFT JOIN
+        product_addicto AS pa ON pc.id = pa.product_common_id
+    WHERE
+        pc.is_product_enabled = 1 AND pc.productADDICTO = 1
+    ORDER BY
+        pc.productfamily, pa.unii_id, pc.topproductname, pc.productname;
+    `;
+};

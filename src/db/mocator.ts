@@ -1,47 +1,46 @@
 import odbc from 'odbc';
 import { logger } from '../utils/logger.js';
+import { getMocatorOdbcConfig } from '../config/database.js'; // Import de la fonction
+
+let mocatorOdbcPool: odbc.Pool | null = null;
 
 export async function createPoolMocatorOdbc(): Promise<odbc.Pool> {
-    try {
-        const pool = await odbc.pool({
-            connectionString: `DSN=${process.env.MOCATOR_DSN};\nUid=${process.env.MOCATOR_USER};\nPwd=${process.env.MOCATOR_PASSWORD};\nCHARSET=UTF8`
-        });
-        console.log('Pool MOCATOR ODBC créé avec succès');
-        logger.info('Pool MOCATOR ODBC créé avec succès');
-        return pool;
-    } catch (error) {
-        console.log('\nERREUR DE CONNEXION MOCATOR:');
-        logger.error('\nERREUR DE CONNEXION MOCATOR:');
-        console.log(`   - Type: ${error instanceof Error ? error.constructor.name : typeof error}`);
-        logger.error(`   - Type: ${error instanceof Error ? error.constructor.name : typeof error}`);
-        console.log(`   - Message: ${error instanceof Error ? error.message : String(error)}`);
-        logger.error(`   - Message: ${error instanceof Error ? error.message : String(error)}`);
-        if (error instanceof Error && 'odbcErrors' in error) {
-            console.log('   - Détails ODBC:');
-            logger.error('   - Détails ODBC:');
-            (error as any).odbcErrors.forEach((err: any, index: number) => {
-                console.log(`     Erreur ${index + 1}:`);
-                logger.error(`     Erreur ${index + 1}:`);
-                console.log(`       - Code: ${err.code}`);
-                logger.error(`       - Code: ${err.code}`);
-                console.log(`       - État: ${err.state}`);
-                logger.error(`       - État: ${err.state}`);
-                console.log(`       - Message: ${err.message}`);
-                logger.error(`       - Message: ${err.message}`);
-            });
+    if (!mocatorOdbcPool) {
+        try {
+            logger.info('Création du pool de connexions pour MOCATOR ODBC...');
+            const config = getMocatorOdbcConfig(); // Appel de la fonction
+            const connectionString = `DSN=${config.dsn};\nUid=${config.uid};\nPwd=${config.pwd};\nCHARSET=${config.charset}`;
+            mocatorOdbcPool = await odbc.pool({ connectionString });
+            logger.info('Pool MOCATOR ODBC créé avec succès');
+        } catch (error) {
+            logger.error('\nERREUR DE CONNEXION MOCATOR ODBC:');
+            logger.error(`   - Type: ${error instanceof Error ? error.constructor.name : typeof error}`);
+            logger.error(`   - Message: ${error instanceof Error ? error.message : String(error)}`);
+            if (error instanceof Error && 'odbcErrors' in error) {
+                (error as any).odbcErrors.forEach((err: any, index: number) => {
+                    logger.error(`     Erreur ${index + 1}:`);
+                    logger.error(`       - Code: ${err.code}`);
+                    logger.error(`       - État: ${err.state}`);
+                    logger.error(`       - Message: ${err.message}`);
+                });
+            }
+            logger.error('===============================');
+            throw error;
         }
-        console.log('===============================');
-        logger.error('===============================');
-        throw error;
     }
+    return mocatorOdbcPool;
 }
 
-export async function closePoolMocatorOdbc(pool: odbc.Pool): Promise<void> {
-    try {
-        await pool.close();
-    } catch (error) {
-        console.error('Erreur lors de la fermeture du pool ODBC MOCATOR:', error);
-        logger.error('Erreur lors de la fermeture du pool ODBC MOCATOR:', error);
-        throw error;
+export async function closePoolMocatorOdbc(): Promise<void> {
+    if (mocatorOdbcPool) {
+        try {
+            logger.info('Fermeture du pool MOCATOR ODBC...');
+            await mocatorOdbcPool.close();
+            mocatorOdbcPool = null;
+            logger.info('Pool MOCATOR ODBC fermé avec succès');
+        } catch (error) {
+            logger.warn('Erreur non critique lors de la fermeture du pool MOCATOR ODBC:', error);
+            // Ne pas re-throw pour les erreurs non critiques de fermeture de pool
+        }
     }
-} 
+}

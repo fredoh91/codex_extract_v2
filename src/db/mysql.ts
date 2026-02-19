@@ -1,40 +1,33 @@
 import mysql from 'mysql2/promise';
+import { getCodexExtractConfig } from '../config/database.js'; // Import de la fonction
 import { logger } from '../utils/logger.js';
 
+let codexExtractPool: mysql.Pool | null = null;
+
 export async function createPoolCodexExtract(): Promise<mysql.Pool> {
-  try {
-    console.log('Configuration MySQL:');
-    console.log('- Host:', process.env.CODEX_EXTRACT_HOST);
-    console.log('- User:', process.env.CODEX_EXTRACT_USER);
-    console.log('- Database:', process.env.CODEX_EXTRACT_DATABASE);
-    
-    const pool = mysql.createPool({
-      host: process.env.CODEX_EXTRACT_HOST,
-      user: process.env.CODEX_EXTRACT_USER,
-      password: process.env.CODEX_EXTRACT_PASSWORD,
-      database: process.env.CODEX_EXTRACT_DATABASE,
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0
-    });
-    console.log('Pool MySQL cree avec succes');
-    logger.info('Pool MySQL cree avec succes');
-    return pool;
-  } catch (error) {
-    console.error('Erreur lors de la creation du pool MySQL:', error);
-    logger.error('Erreur lors de la creation du pool MySQL:', error);
-    throw error;
+  if (!codexExtractPool) {
+    try {
+      logger.info('Création du pool de connexions pour CODEX_EXTRACT...');
+      codexExtractPool = mysql.createPool(getCodexExtractConfig()); // Appel de la fonction
+      logger.info('Pool MySQL CODEX_EXTRACT créé avec succès');
+    } catch (error) {
+      logger.error('Erreur lors de la création du pool MySQL CODEX_EXTRACT:', error);
+      throw error;
+    }
   }
+  return codexExtractPool;
 }
 
-export async function closePoolCodexExtract(pool: mysql.Pool): Promise<void> {
-  try {
-    console.log('Pool MySQL ferme avec succes');
-    logger.info('Pool MySQL ferme avec succes');
-    await pool.end();
-  } catch (error) {
-    console.error('Erreur lors de la fermeture du pool MySQL:', error);
-    logger.error('Erreur lors de la fermeture du pool MySQL:', error);
-    throw error;
+export async function closePoolCodexExtract(): Promise<void> {
+  if (codexExtractPool) {
+    try {
+      logger.info('Fermeture du pool MySQL CODEX_EXTRACT...');
+      await codexExtractPool.end();
+      codexExtractPool = null;
+      logger.info('Pool MySQL CODEX_EXTRACT fermé avec succès');
+    } catch (error) {
+      logger.error('Erreur lors de la fermeture du pool MySQL CODEX_EXTRACT:', error);
+      throw error;
+    }
   }
 } 

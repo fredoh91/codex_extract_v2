@@ -49,7 +49,7 @@ async function main(): Promise<void> {
   } finally {
     // Fermeture du pool
     if (poolCodexExtract) {
-      await closePoolCodexExtract(poolCodexExtract);
+      await closePoolCodexExtract();
     }
   }
 }

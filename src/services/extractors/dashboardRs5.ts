@@ -29,13 +29,18 @@ interface DashboardRs5Data {
 }
 
 export class DashboardRs5Extractor extends BaseExtractor {
-  private readonly batchSize: number;
+  private readonly initialBatchSize: number; // Taille des lots pour la récupération des codes VU
+  private readonly insertionBatchSize: number; // Taille des lots pour le traitement avant l'insertion SQL
+  private readonly logFrequency: number; // Taille des morceaux pour l'insertion SQL et la fréquence de log
+
   protected sourcePool: OdbcPool;
   protected targetPool: MysqlPool;
 
-  constructor(sourcePool: OdbcPool, targetPool: MysqlPool, batchSize: number = 50000) {
+  constructor(sourcePool: OdbcPool, targetPool: MysqlPool, initialBatchSize: number = 50000, insertionBatchSize: number = 5000, logFrequency: number = 1000) {
     super(sourcePool, targetPool, 'dashboard_rs5');
-    this.batchSize = batchSize;
+    this.initialBatchSize = initialBatchSize;
+    this.insertionBatchSize = insertionBatchSize;
+    this.logFrequency = logFrequency;
     this.sourcePool = sourcePool;
     this.targetPool = targetPool;
   }
@@ -83,9 +88,12 @@ export class DashboardRs5Extractor extends BaseExtractor {
   }
 
   async extract(): Promise<void> {
+    let connectionTarget; // connectionSource est supprimé
     try {
       logger.info('Debut de l\'extraction des donnees pour le dashboard RS5');
       
+      connectionTarget = await this.targetPool.getConnection(); // Seulement pour targetPool (MySQL)
+
       // Vidage de la table
       await truncateTable(this.targetPool, 'dashboard_rs5');
       
@@ -93,19 +101,21 @@ export class DashboardRs5Extractor extends BaseExtractor {
       const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
       
       // Récupération des codes VU
-      const codeVURows = await this.sourcePool.query(getDashboardRs5CodeVUQuery());
+      const codeVURows = await this.sourcePool.query(getDashboardRs5CodeVUQuery()); // Utilise directement sourcePool
       const codeVUs = codeVURows.map((row: { codeVU: string }) => row.codeVU);
       
-      // Traitement par lots
-      const batches = this.chunkArray(codeVUs, this.batchSize);
-      let totalInserted = 0;
-      
+      // Traitement par lots (pour la récupération des données)
+      const batches = this.chunkArray(codeVUs, this.initialBatchSize);
+      let actualTotalInserted = 0; // Compteur réel des lignes insérées
+      let lastLoggedCount = 0; // Pour suivre le dernier log de progression
+      const logFrequency = parseInt(process.env.NB_LIGNES_DEBUG_DASHBOARDRS5 || '1000'); // Frequence de log
+
       for (const batch of batches) {
-        const rows = await this.sourcePool.query(getDashboardRs5Query(batch as string[]));
+        const rows = await this.sourcePool.query(getDashboardRs5Query(batch as string[])); // Utilise directement sourcePool
         
         if (rows.length > 0) {
-          // Traitement des résultats par lots de 100 lignes
-          const rowBatches = this.chunkArray(rows, this.batchSize);
+          // Traitement des résultats par lots (pour l'insertion)
+          const rowBatches = this.chunkArray(rows, this.insertionBatchSize); // Utilisation de insertionBatchSize
           
           for (const rowBatch of rowBatches) {
             const values = rowBatch.map((row: unknown) => {
@@ -115,18 +125,46 @@ export class DashboardRs5Extractor extends BaseExtractor {
               };
               return this.formatRow(rowWithDate);
             });
-            const query = insertDashboardRs5Query(values);
-            await this.targetPool.query(query);
-            totalInserted += rowBatch.length;
-            logger.info(`${rowBatch.length} lignes inserees dans dashboard_rs5`);
+
+            // Chunk the formatted values for SQL insertion using this.logFrequency
+            const sqlInsertChunks = this.chunkArray(values, this.logFrequency); // logFrequency sera la taille des chunks SQL
+
+            for (const sqlInsertChunk of sqlInsertChunks) {
+              const query = insertDashboardRs5Query(sqlInsertChunk as string[]);
+              await connectionTarget.query(query);
+              
+              actualTotalInserted += sqlInsertChunk.length; // Incrémente le compteur réel
+              
+              // Log de progression selon la fréquence configurée
+              // On log si actualTotalInserted a franchi un nouveau seuil de logFrequency
+              if (Math.floor(actualTotalInserted / logFrequency) > Math.floor(lastLoggedCount / logFrequency)) {
+                const now = new Date();
+                const dateStr = now.toLocaleString('fr-FR', { hour12: false });
+                console.log(`[${dateStr}] ${actualTotalInserted} lignes inserees dans dashboard_rs5...`);
+                lastLoggedCount = actualTotalInserted;
+              }
+            }
           }
         }
       }
       
-      logger.info(`Extraction terminee. Total: ${totalInserted} lignes inserees dans dashboard_rs5`);
+      // Assurer que le dernier total inséré est toujours logué si le total n'est pas un multiple exact
+      if (actualTotalInserted > lastLoggedCount) {
+        const now = new Date();
+        const dateStr = now.toLocaleString('fr-FR', { hour12: false });
+        console.log(`[${dateStr}] ${actualTotalInserted} lignes inserees dans dashboard_rs5...`);
+      }
+      
+      logger.info(`Extraction terminee. Total: ${actualTotalInserted} lignes inserees dans dashboard_rs5`);
     } catch (error) {
-      logger.error('Erreur lors de l\'extraction des donnees pour le dashboard RS5:', error);
+      logger.error('Erreur lors de l\'extraction des donnees pour le dashboard RS5:', error); // Log complet de l'objet erreur
+      if (error instanceof Error && error.stack) {
+        logger.error('Stack trace:', error.stack);
+      }
       throw error;
+    } finally {
+      // if (connectionSource) connectionSource.release(); // Supprimé
+      if (connectionTarget) connectionTarget.release();
     }
   }
-} 
+}

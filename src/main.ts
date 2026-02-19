@@ -12,6 +12,7 @@ dotenv.config({ path: resolve(__dirname, '../.env') });
 import { createPoolCodexExtract, closePoolCodexExtract } from './db/mysql.js';
 import { createPoolCodexOdbc, closePoolCodexOdbc } from './db/sybase.js';
 import { createPoolMocatorOdbc, closePoolMocatorOdbc } from './db/mocator.js';
+import { createPoolBnpvExtract, closePoolBnpvExtract } from './db/mysqlBnpv.js'; // Nouveau
 import { logger } from './utils/logger.js';
 import { insertDatesLancementsExtractionsQuery } from './db/queries/target.js';
 import { SavuExtractor } from './services/extractors/savu.js';
@@ -27,6 +28,7 @@ import { DboNomsSubstanceHaumeaExtractor } from './services/extractors/dboNomsSu
 import { DboVuHaumeaExtractor } from './services/extractors/dboVuHaumea.js';
 import { DboVuTitulairesHaumeaExtractor } from './services/extractors/dboVuTitulairesHaumea.js';
 import { VudelivranceExtractor } from './services/extractors/vudelivrance.js';
+import { SubSimadExtractor } from './services/extractors/subSimad.js';
 import { DashboardRs5Extractor } from './services/extractors/dashboardRs5.js';
 import { MocatorDocumentExtractor } from './services/extractors/mocatordocument.js';
 import { MocatorDocumentHtmlExtractor } from './services/extractors/mocatordocument_html.js';
@@ -34,19 +36,21 @@ import { MocatorDocumentXmlExtractor } from './services/extractors/mocatordocume
 
 async function main(): Promise<void> {
   let poolCodexExtract;
-  let poolCodexOdbc;
-  let poolMocatorOdbc;
+  let poolCodexOdbc; // Maintenu pour être passé aux constructeurs des extracteurs
+  let poolMocatorOdbc; // Maintenu pour être passé aux constructeurs des extracteurs
+  let poolBnpvExtract; // Nouvelle déclaration
   const extractionStart = new Date();
   let nbTablesExtraites = 0;
   try {
     logger.info('Debut import : CODEX => CODEX_extract');
     
     poolCodexExtract = await createPoolCodexExtract();
-    poolCodexOdbc = await createPoolCodexOdbc();
-    poolMocatorOdbc = await createPoolMocatorOdbc();
+    poolCodexOdbc = await createPoolCodexOdbc(); // Assigne l'instance singleton
+    poolMocatorOdbc = await createPoolMocatorOdbc(); // Assigne l'instance singleton
+    poolBnpvExtract = createPoolBnpvExtract(); // Nouvelle initialisation
 
 
-    // Creation et execution des extracteurs
+    // //Creation et execution des extracteurs
     const savuExtractor = new SavuExtractor(poolCodexOdbc, poolCodexExtract);
     await savuExtractor.extract();
     nbTablesExtraites++;
@@ -99,6 +103,10 @@ async function main(): Promise<void> {
     await vudelivranceExtractor.extract();
     nbTablesExtraites++;
 
+    const subSimadExtractor = new SubSimadExtractor(poolCodexExtract); // Correction ici
+    await subSimadExtractor.extract();
+    nbTablesExtraites++;
+
     const dashboardRs5Extractor = new DashboardRs5Extractor(poolCodexOdbc, poolCodexExtract, 100);
     await dashboardRs5Extractor.extract();
     nbTablesExtraites++;
@@ -117,7 +125,6 @@ async function main(): Promise<void> {
     nbTablesExtraites++;
 
   } catch (error) {
-    console.error('Erreur brute:', error);
     logger.error('Erreur brute:', error);
     logger.error('Erreur lors du traitement:', error instanceof Error ? error.message : error);
     if (error instanceof Error && error.stack) {
@@ -139,20 +146,16 @@ async function main(): Promise<void> {
       } catch (err) {
         logger.error('Erreur lors de l\'insertion dans dates_lancements_extractions:', err);
       }
-      await closePoolCodexExtract(poolCodexExtract);
+      await closePoolCodexExtract();
     }
-    if (poolCodexOdbc) {
+    await closePoolCodexOdbc(); // Appel direct de la fonction de fermeture singleton
+    await closePoolMocatorOdbc(); // Appel direct de la fonction de fermeture singleton
+    // Fermeture du pool BNPV Miroir
+    if (poolBnpvExtract) {
       try {
-        await closePoolCodexOdbc(poolCodexOdbc);
+        await closePoolBnpvExtract();
       } catch (err) {
-        logger.warn('Erreur non critique lors de la fermeture du pool ODBC CODEX:', err);
-      }
-    }
-    if (poolMocatorOdbc) {
-      try {
-        await closePoolMocatorOdbc(poolMocatorOdbc);
-      } catch (err) {
-        logger.warn('Erreur non critique lors de la fermeture du pool ODBC MOCATOR:', err);
+        logger.warn('Erreur non critique lors de la fermeture du pool BNPV Miroir:', err);
       }
     }
     logger.info('Fin import');
@@ -164,7 +167,6 @@ if (process.env.TYPE_EXECUTION === 'Prod') {
   process.on('uncaughtException', (err: Error) => {
     const stackLines = err.stack?.split('\n') ?? [];
     const location = stackLines[1]?.trim() ?? 'Unknown location';
-    console.error(`Uncaught Exception: ${err.message}`);
     logger.error(`Uncaught Exception: ${err.message}`);
     logger.error(`Location: ${location}`);
     logger.error(err.stack);
@@ -174,7 +176,6 @@ if (process.env.TYPE_EXECUTION === 'Prod') {
     const error = reason as Error;
     const stackLines = error.stack?.split('\n') ?? [];
     const location = stackLines[1]?.trim() ?? 'Unknown location';
-    console.error(`Unhandled Rejection at: ${promise}, reason: ${reason}`);
     logger.error(`Unhandled Rejection at: ${promise}, reason: ${reason}`);
     logger.error(`Location: ${location}`);
     logger.error(error.stack);

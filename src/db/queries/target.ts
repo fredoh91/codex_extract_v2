@@ -356,6 +356,15 @@ export function insertMocatorDocumentXmlQuery(): string {
   `;
 }
 
+export function insertSubSimadQuery(): string {
+  return `
+    INSERT INTO sub_simad (
+      productfamily, topproductname, productname, creation_date, modification_date,
+      unii_id, cas_id, is_product_enabled, product_pv, product_addicto
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+}
+
 export function insertDatesLancementsExtractionsQuery(): string {
   return `
     INSERT INTO dates_lancements_extractions (
