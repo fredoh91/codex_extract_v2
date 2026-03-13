@@ -1,6 +1,10 @@
 # Codex Extract TS
 
-Ce projet est une application Node.js qui permet de copier des données d'une base de données Sybase vers une base de données MySQL.
+Ce projet est une application Node.js qui permet de copier des données provenant de différentes bases de données :
+- Sybase 
+- MySQL
+
+vers une base de données MySQL.
 
 ## Prérequis
 
@@ -13,7 +17,7 @@ Ce projet est une application Node.js qui permet de copier des données d'une ba
 
 1. Clonez le dépôt :
 ```bash
-git clone [URL_DU_REPO]
+git clone git@github.com:fredoh91/codex_extract_v2.git
 cd codex_extract_ts
 ```
 
@@ -22,10 +26,8 @@ cd codex_extract_ts
 npm install
 ```
 
-3. Copiez le fichier `.env.example` en `.env` et configurez vos variables d'environnement :
-```bash
-cp .env.example .env
-```
+3. Configurez les variables d'environnement `.env`
+
 
 ## Configuration
 
@@ -62,4 +64,4 @@ Les logs sont stockés dans le répertoire `logs/` avec rotation automatique :
 
 ## Licence
 
-[Votre licence] 
+pas de licence
