@@ -9,11 +9,11 @@ export async function createPoolMocatorOdbc(): Promise<odbc.Pool> {
         try {
             logger.info('Création du pool de connexions pour MOCATOR ODBC...');
             const config = getMocatorOdbcConfig(); // Appel de la fonction
-            const connectionString = `DSN=${config.dsn};\nUid=${config.uid};\nPwd=${config.pwd};\nCHARSET=${config.charset}`;
+            const connectionString = `DSN=${config.dsn};Uid=${config.uid};Pwd=${config.pwd};CHARSET=${config.charset}`;
             mocatorOdbcPool = await odbc.pool({ connectionString });
             logger.info('Pool MOCATOR ODBC créé avec succès');
         } catch (error) {
-            logger.error('\nERREUR DE CONNEXION MOCATOR ODBC:');
+            logger.error('ERREUR DE CONNEXION MOCATOR ODBC:');
             logger.error(`   - Type: ${error instanceof Error ? error.constructor.name : typeof error}`);
             logger.error(`   - Message: ${error instanceof Error ? error.message : String(error)}`);
             if (error instanceof Error && 'odbcErrors' in error) {

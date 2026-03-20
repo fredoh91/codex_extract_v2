@@ -25,10 +25,7 @@ dotenv.config({ path: envPath });
 async function createPoolCodexOdbc(): Promise<odbc.Pool> {
   try {
     const connectionConfig = {
-      connectionString: `DSN=${process.env.CODEX_ODBC_NAME};
-                         Uid=${process.env.CODEX_USER};
-                         Pwd=${process.env.CODEX_PASSWORD};
-                         CHARSET=UTF8`,
+      connectionString: `DSN=${process.env.CODEX_ODBC_NAME};Uid=${process.env.CODEX_USER};Pwd=${process.env.CODEX_PASSWORD};CHARSET=UTF8`,
       connectionTimeout: 10,
       loginTimeout: 10,
     };
@@ -71,4 +68,3 @@ export {
   createPoolCodexOdbc,
   closePoolCodexOdbc,
 };
-

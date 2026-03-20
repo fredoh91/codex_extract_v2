@@ -14,7 +14,11 @@ export async function truncateTable(pool: MysqlPool, tableName: string): Promise
     
     logger.info(`Table ${tableName} videe avec succes`);
   } catch (error) {
-    logger.error(`Erreur lors du vidage de la table ${tableName}:`, error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    logger.error(`Erreur lors du vidage de la table ${tableName}: ${errorMsg}`);
+    if (error instanceof Error && error.stack) {
+      logger.error(`Stack: ${error.stack}`);
+    }
     throw error;
   }
-} 
+}

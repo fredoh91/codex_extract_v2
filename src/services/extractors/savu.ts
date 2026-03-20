@@ -18,8 +18,13 @@ export class SavuExtractor {
     try {
       // 1. Vider la table cible
       logger.info('Vidage de la table savu...');
-      await truncateTable(this.targetPool, 'savu');
-      logger.info('Table savu videe avec succes');
+      try {
+        await truncateTable(this.targetPool, 'savu');
+        logger.info('Table savu videe avec succes');
+      } catch (truncError) {
+        logger.error('Erreur spécifique lors de l\'appel à truncateTable sur savu');
+        throw truncError;
+      }
 
       // 2. Executer la requête source
       logger.info('Extraction des donnees SAVU...');
@@ -37,15 +42,6 @@ export class SavuExtractor {
       }
 
       logger.info(`${rows.length} SAVU trouves`);
-
-      // // Afficher le premier enregistrement pour debug
-      // if (rows.length > 0) {
-      //   const firstRow = rows[0];
-      //   logger.info('=== PREMIER ENREGISTREMENT SAVU ===');
-      //   logger.info('Proprietes disponibles: ' + Object.keys(firstRow).join(', '));
-      //   logger.info('Donnees du premier enregistrement:', JSON.stringify(firstRow, null, 2));
-      //   logger.info('=============================');
-      // }
 
       // 3. Inserer les donnees dans la table cible
       logger.info('Insertion des donnees dans savu...');
@@ -79,7 +75,6 @@ export class SavuExtractor {
           ]);
           insertedCount++;
           
-          // Log selon la fréquence configurée
           if (insertedCount % logFrequency === 0) {
             const now = new Date();
             const dateStr = now.toLocaleString('fr-FR', { hour12: false });
@@ -88,24 +83,21 @@ export class SavuExtractor {
           
         } catch (error) {
           errorCount++;
-          logger.error(`Erreur lors de l'insertion de l'enregistrement:`, error);
-          logger.error('Message d\'erreur:', error instanceof Error ? error.message : String(error));
+          const errorMsg = error instanceof Error ? error.message : String(error);
+          logger.error(`Erreur lors de l'insertion de l'enregistrement: ${errorMsg}`);
           logger.error('Donnees problematiques:', JSON.stringify(row, null, 2));
-          
-          // Afficher les détails de l'erreur MySQL si disponible
-          if (error instanceof Error && 'code' in error) {
-            logger.error('Code erreur MySQL:', (error as any).code);
-            logger.error('Etat SQL:', (error as any).sqlState);
-            logger.error('Message SQL:', (error as any).sqlMessage);
-          }
         }
       }
 
       logger.info(`Traitement termine : ${insertedCount} enregistrements inseres, ${errorCount} erreurs`);
 
     } catch (error) {
-      logger.error('Erreur lors de l\'extraction des SAVU:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      logger.error(`Erreur lors de l'extraction des SAVU: ${errorMsg}`);
+      if (error instanceof Error && error.stack) {
+        logger.error(`Stack: ${error.stack}`);
+      }
       throw error;
     }
   }
-} 
+}

@@ -10,10 +10,7 @@ export async function createPoolCodexOdbc(): Promise<odbc.Pool> {
             logger.info('Création du pool de connexions pour SYBASE ODBC CODEX...');
             const config = getCodexOdbcConfig(); // Appel de la fonction
 
-            const connectionString = `DSN=${config.dsn};
-                                      Uid=${config.uid};
-                                      Pwd=${config.pwd};
-                                      CHARSET=${config.charset}`;
+            const connectionString = `DSN=${config.dsn};Uid=${config.uid};Pwd=${config.pwd};CHARSET=${config.charset}`;
 
             codexOdbcPool = await odbc.pool({ connectionString });
             logger.info('Pool SYBASE ODBC CODEX créé avec succès');
@@ -48,4 +45,4 @@ export async function closePoolCodexOdbc(): Promise<void> {
             // Ne pas re-throw pour les erreurs non critiques de fermeture de pool
         }
     }
-} 
+}
