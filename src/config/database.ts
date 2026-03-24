@@ -7,6 +7,7 @@ export function getCodexExtractConfig(): DatabaseConfig {
   const password = process.env.CODEX_extract_PASSWORD || process.env.CODEX_EXTRACT_PASSWORD;
   const database = process.env.CODEX_extract_DATABASE || process.env.CODEX_EXTRACT_DATABASE;
   const port = process.env.CODEX_extract_PORT || process.env.CODEX_EXTRACT_PORT || '3306';
+  const charset = process.env.CODEX_extract_CHARSET || process.env.CODEX_EXTRACT_CHARSET || 'utf8mb4';
 
   if (!host || !user || !password || !database) {
     console.error('ERREUR: Variables d\'environnement MySQL de destination manquantes (CODEX_extract_...)');
@@ -16,6 +17,7 @@ export function getCodexExtractConfig(): DatabaseConfig {
     host: host!,
     port: parseInt(port, 10),
     database: database!,
+    charset: charset!,
     user: user!,
     password: password!,
     waitForConnections: true,
@@ -31,6 +33,7 @@ export function getDbBnpvMiroirConfig(): DatabaseConfig {
     user: process.env.BNPV_MIROIR_USER!,
     password: process.env.BNPV_MIROIR_PASSWORD!,
     database: process.env.BNPV_MIROIR_DATABASE!,
+    charset: process.env.BNPV_MIROIR_CHARSET!,
     connectionLimit: 10,
   };
 }
